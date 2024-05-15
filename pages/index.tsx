@@ -1,7 +1,7 @@
 import { Container, Paper, Tabs, rem } from '@mantine/core';
 import { IconCards, IconQrcode } from '@tabler/icons-react';
-import CreatePromise from '@/components/CreatePromise';
-import AuthGuard from '@/components/AuthGuard';
+import CreatePromise from '@/components/CreatePromise/CreatePromise';
+import AuthGuard from '@/components/AuthGuard/AuthGuard';
 
 function HomePageView() {
   const iconStyle = { width: rem(12), height: rem(12) };

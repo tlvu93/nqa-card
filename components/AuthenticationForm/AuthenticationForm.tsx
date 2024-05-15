@@ -15,8 +15,8 @@ import {
   Container,
 } from '@mantine/core';
 import { signIn } from 'next-auth/react';
-import { GoogleButton } from '../GoogleButton';
-import { GithubButton } from '../GithubButton';
+import { GoogleButton } from '../GoogleButton/GoogleButton';
+import { GithubButton } from '../GithubButton/GithubButton';
 
 export function AuthenticationForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);

@@ -4,7 +4,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Welcome } from '../components/Welcome/Welcome';
-import { AuthenticationForm } from '@/components/AuthenticationForm';
+import { AuthenticationForm } from '@/components/AuthenticationForm/AuthenticationForm';
 
 export default function LoginPage() {
   const { status } = useSession();
