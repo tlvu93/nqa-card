@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { Center, Grid, em, Button } from '@mantine/core';
+import { Center, Grid, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Welcome } from '../components/Welcome/Welcome';
+import { AuthenticationForm } from '@/components/AuthenticationForm';
 
 export default function LoginPage() {
   const { status } = useSession();
@@ -39,8 +40,7 @@ export default function LoginPage() {
         <Grid.Col span={isMobile ? 12 : 6}>
           <Center h="100%">
             <div>
-              <Button onClick={() => signIn('google')}>Sign in with Google</Button>
-              <Button onClick={() => signIn('github')}>Sign in with GitHub</Button>
+              <AuthenticationForm />
             </div>
           </Center>
         </Grid.Col>
