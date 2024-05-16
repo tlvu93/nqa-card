@@ -2,6 +2,7 @@ import { Container, Paper, Tabs, rem } from '@mantine/core';
 import { IconCards, IconQrcode } from '@tabler/icons-react';
 import CreatePromise from '@/components/CreatePromise/CreatePromise';
 import AuthGuard from '@/components/AuthGuard/AuthGuard';
+import { BaseLayout } from '@/layouts/BaseLayout';
 
 function HomePageView() {
   const iconStyle = { width: rem(12), height: rem(12) };
@@ -30,7 +31,11 @@ function HomePageView() {
 }
 
 HomePageView.getLayout = function getLayout(page: React.ReactNode) {
-  return <AuthGuard>{page}</AuthGuard>;
+  return (
+    <BaseLayout>
+      <AuthGuard>{page}</AuthGuard>
+    </BaseLayout>
+  );
 };
 
 export default HomePageView;

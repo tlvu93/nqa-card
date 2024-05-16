@@ -9,4 +9,7 @@ export default withBundleAnalyzer({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  sassOptions: {
+    prependData: `@import "./_mantine.scss";`,
+  },
 });
