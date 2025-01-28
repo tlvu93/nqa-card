@@ -52,31 +52,36 @@ export const authOptions: NextAuthOptions = {
         where: { email: user.email },
         update: {
           name: user.name,
+          image: user.image,
         },
         create: {
           email: user.email,
           name: user.name,
+          image: user.image,
         },
       });
 
       return true;
     },
-    async jwt({ token, account }: { token: JWT; account?: any }): Promise<JWT> {
-      // Persist the OAuth access_token to the token right after signin
+    async jwt({ token, account, user }: { token: JWT; account?: any; user?: any }): Promise<JWT> {
+      // Persist the OAuth access_token and user data to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
       }
+      if (user) {
+        token.name = user.name;
+        token.image = user.image;
+      }
       return token;
     },
-    async session({
-      session,
-      token,
-    }: {
-      session: Session;
-      token: JWT;
-      user: any;
-    }): Promise<Session> {
+    async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
       session.accessToken = token.accessToken;
+
+      if (session.user) {
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
+      }
+
       return session;
     },
   },

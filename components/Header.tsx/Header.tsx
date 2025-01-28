@@ -12,13 +12,14 @@ import {
 import { IconChevronDown, IconLogout } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import cx from 'clsx';
 import classes from './Header.module.scss';
 
 export function Header() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <>
@@ -41,8 +42,8 @@ export function Header() {
                   className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
                 >
                   <Group>
-                    <Avatar src="" alt="user name" />
-                    <Text>user name</Text>
+                    <Avatar src={session?.user?.image || ''} alt={session?.user?.name || 'User'} />
+                    <Text>{session?.user?.name || 'User'}</Text>
                     <IconChevronDown style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
                   </Group>
                 </UnstyledButton>
