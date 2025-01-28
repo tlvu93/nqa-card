@@ -30,8 +30,6 @@ export function AuthenticationForm(props: PaperProps) {
 
     validate: {
       email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val: string) =>
-        val.length <= 6 ? 'Password should include at least 6 characters' : null,
     },
   });
 
@@ -53,7 +51,16 @@ export function AuthenticationForm(props: PaperProps) {
 
         <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-        <form onSubmit={form.onSubmit(() => {})}>
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            await signIn('credentials', {
+              email: values.email,
+              password: values.password,
+              redirect: true,
+              callbackUrl: '/',
+            });
+          })}
+        >
           <Stack>
             {type === 'register' && (
               <TextInput

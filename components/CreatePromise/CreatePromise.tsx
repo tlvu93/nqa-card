@@ -1,27 +1,62 @@
 import { Button, Center, Container, Flex, SegmentedControl, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import React from 'react';
+import React, { useState } from 'react';
+
+import { notifications } from '@mantine/notifications';
 
 interface CreatePromiseProps {
   onViewChange: (value: 'create' | 'scan') => void;
 }
 
 const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm({
     initialValues: {
+      title: '',
+      description: '',
       promiseTo: '',
-      label1: '',
-      label2: '',
     },
     validate: {
+      title: (value) => (value.length < 2 ? 'Title must be at least 2 characters' : null),
+      description: (value) =>
+        value.length < 2 ? 'Description must be at least 2 characters' : null,
       promiseTo: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
-      label1: (value) => (value.length < 2 ? 'Label must be at least 2 characters' : null),
     },
   });
 
-  const handleSubmit = form.onSubmit((values) => {
-    console.log(values);
-    // Handle form submission
+  const handleSubmit = form.onSubmit(async (values) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/promises/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create promise');
+      }
+
+      await response.json();
+      notifications.show({
+        title: 'Success',
+        message: 'Promise created successfully',
+        color: 'green',
+      });
+      form.reset();
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to create promise',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
   });
 
   return (
@@ -46,28 +81,29 @@ const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
           <Flex direction="column" gap="md">
             <TextInput
               required
-              label="Promise to"
-              placeholder="Enter the name of the promise receiver"
-              description="This is a description"
-              {...form.getInputProps('promiseTo')}
+              label="Title"
+              placeholder="Enter a title for your promise"
+              description="A short title describing what you're promising"
+              {...form.getInputProps('title')}
             />
 
             <TextInput
               required
-              label="Label"
-              placeholder="Placeholder text"
-              description="This is a description"
-              {...form.getInputProps('label1')}
+              label="Description"
+              placeholder="Enter the details of your promise"
+              description="Describe what you're promising in detail"
+              {...form.getInputProps('description')}
             />
 
             <TextInput
-              label="Label"
-              placeholder="Placeholder text"
-              description="This is a description"
-              {...form.getInputProps('label2')}
+              required
+              label="Promise to"
+              placeholder="Enter the name of the promise receiver"
+              description="Who are you making this promise to?"
+              {...form.getInputProps('promiseTo')}
             />
 
-            <Button type="submit" fullWidth>
+            <Button type="submit" fullWidth loading={loading}>
               Create Promise
             </Button>
           </Flex>

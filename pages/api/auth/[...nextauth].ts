@@ -1,11 +1,30 @@
 import NextAuth, { NextAuthOptions, Session } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text', placeholder: 'test@example.com' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        // This is a simple example for development
+        if (credentials?.email === 'test@example.com' && credentials?.password === 'test') {
+          return {
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+          };
+        }
+        return null;
+      },
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID ?? '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',

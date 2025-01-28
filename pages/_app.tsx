@@ -1,7 +1,9 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 
 import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next/types';
@@ -23,6 +25,7 @@ export default function App({
   const getLayout = Component.getLayout ?? ((page) => page);
   return (
     <MantineProvider theme={theme}>
+      <Notifications />
       <Head>
         <title>Mantine Template</title>
         <meta
