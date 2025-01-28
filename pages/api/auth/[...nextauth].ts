@@ -3,6 +3,7 @@ import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
+import { prisma } from '../../../lib/prisma';
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
@@ -43,6 +44,23 @@ export const authOptions: NextAuthOptions = {
     // ...add more providers here
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (!user.email) return false;
+
+      // Create or update user in database
+      await prisma.user.upsert({
+        where: { email: user.email },
+        update: {
+          name: user.name,
+        },
+        create: {
+          email: user.email,
+          name: user.name,
+        },
+      });
+
+      return true;
+    },
     async jwt({ token, account }: { token: JWT; account?: any }): Promise<JWT> {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
