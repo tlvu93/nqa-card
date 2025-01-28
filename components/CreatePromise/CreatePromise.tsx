@@ -1,9 +1,7 @@
 import {
   Button,
-  Center,
   Container,
   Flex,
-  SegmentedControl,
   TextInput,
   Title,
   Select,
@@ -21,11 +19,7 @@ import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { notifications } from '@mantine/notifications';
 
-interface CreatePromiseProps {
-  onViewChange: (value: 'create' | 'scan') => void;
-}
-
-const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
+const CreatePromise = () => {
   const [loading, setLoading] = useState(false);
   const [createdPromiseId, setCreatedPromiseId] = useState<string | null>(null);
 
@@ -168,17 +162,6 @@ const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
   return (
     <Container size="xs" mt="xl">
       <Flex direction="column" gap="lg">
-        <Center>
-          <SegmentedControl
-            value="create"
-            onChange={(value) => onViewChange(value as 'create' | 'scan')}
-            data={[
-              { label: 'Create Promise', value: 'create' },
-              { label: 'Scan Promise', value: 'scan' },
-            ]}
-          />
-        </Center>
-
         <Title order={1} ta="center">
           Create Promise
         </Title>
