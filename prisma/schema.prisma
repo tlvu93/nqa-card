@@ -38,26 +38,96 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  promises      Promise[] @relation("CreatedPromises")
+  id                String    @id @default(cuid())
+  name              String?
+  email             String?   @unique
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  promises          Promise[] @relation("CreatedPromises")
+  reactions         Reaction[]
+  sentChallenges    Challenge[] @relation("SentChallenges")
+  receivedChallenges Challenge[] @relation("ReceivedChallenges")
+  stats             UserStats?
 }
 
 model Promise {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  title           String
+  description     String
+  promiseTo       String
+  creatorId       String
+  creator         User      @relation("CreatedPromises", fields: [creatorId], references: [id])
+  status          String    @default("ACTIVE") // ACTIVE, FULFILLED, CANCELLED
+  expiryDate      DateTime?
+  isRecurring     Boolean   @default(false)
+  recurringPeriod String?   // WEEKLY, MONTHLY
+  vow             String?
+  vowTemplate     String?   // Template used for the vow
+  proofImage      String?   // URL to uploaded proof image
+  proofComment    String?
+  recipientEmail  String?   // For notifications
+  theme           String?   // Card theme/color
+  voiceRecording  String?   // URL to voice recording
+  isSecret        Boolean   @default(false)
+  revealDate      DateTime? // For secret promises
+  reactions       Reaction[]
+  challenges      Challenge[]
+  reminders       Reminder[]
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  date      DateTime
+  promiseId String
+  promise   Promise  @relation(fields: [promiseId], references: [id], onDelete: Cascade)
+  sent      Boolean  @default(false)
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  emoji     String
+  promiseId String
+  userId    String
+  promise   Promise  @relation(fields: [promiseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Challenge {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   title       String
   description String
-  promiseTo   String
-  creatorId   String
-  creator     User     @relation("CreatedPromises", fields: [creatorId], references: [id])
-  status      String   @default("ACTIVE") // ACTIVE, FULFILLED, CANCELLED
+  promiseId   String
+  fromUserId  String
+  toUserId    String
+  status      String   @default("PENDING") // PENDING, ACCEPTED, COMPLETED, DECLINED
+  promise     Promise  @relation(fields: [promiseId], references: [id], onDelete: Cascade)
+  fromUser    User     @relation("SentChallenges", fields: [fromUserId], references: [id])
+  toUser      User     @relation("ReceivedChallenges", fields: [toUserId], references: [id])
+}
+
+model UserStats {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  promiseStreak Int      @default(0)
+  totalPromises Int      @default(0)
+  keptPromises  Int      @default(0)
+  level         Int      @default(1)
+  badges        Badge[]
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Badge {
+  id          String     @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String
+  userStats   UserStats[]
 }
 
 model VerificationToken {
