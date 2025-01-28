@@ -41,10 +41,10 @@ export function AuthenticationForm(props: PaperProps) {
         </Text>
 
         <Group grow mb="md" mt="md">
-          <GoogleButton radius="xl" onClick={() => signIn('google')}>
+          <GoogleButton radius="xl" onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
             Google
           </GoogleButton>
-          <GithubButton radius="xl" onClick={() => signIn('github')}>
+          <GithubButton radius="xl" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
             Github
           </GithubButton>
         </Group>
@@ -57,7 +57,7 @@ export function AuthenticationForm(props: PaperProps) {
               email: values.email,
               password: values.password,
               redirect: true,
-              callbackUrl: '/',
+              callbackUrl: '/dashboard',
             });
           })}
         >

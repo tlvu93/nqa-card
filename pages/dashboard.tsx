@@ -2,7 +2,6 @@ import { Container, Paper, Stack } from '@mantine/core';
 import PromiseManager from '@/components/PromiseManager/PromiseManager';
 import AuthGuard from '@/components/AuthGuard/AuthGuard';
 import { BaseLayout } from '@/layouts/BaseLayout';
-import { UserPromises } from '@/components/UserPromises/UserPromises';
 
 function DashboardView() {
   return (
@@ -11,7 +10,6 @@ function DashboardView() {
         <Paper shadow="xs" p="xl">
           <PromiseManager />
         </Paper>
-        <UserPromises />
       </Stack>
     </Container>
   );
