@@ -9,6 +9,8 @@ import {
   UnstyledButton,
   rem,
 } from '@mantine/core';
+import Image from 'next/image';
+import Link from 'next/link';
 import { IconChevronDown, IconLogout } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
@@ -26,7 +28,9 @@ export function Header() {
       <div className={classes.header}>
         <Container className={classes.mainSection} size="md">
           <Group justify="space-between">
-            <Text>Logo</Text>
+            <Link href="/" style={{ cursor: 'pointer' }}>
+              <Image src="/logo.svg" alt="Logo" width={48} height={48} />
+            </Link>
             <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
 
             <Menu
