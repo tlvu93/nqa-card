@@ -11,7 +11,7 @@ import {
 } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IconChevronDown, IconLogout } from '@tabler/icons-react';
+import { IconChevronDown, IconLogout, IconLogin, IconUser } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
@@ -21,7 +21,7 @@ import classes from './Header.module.scss';
 export function Header() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <>
@@ -33,26 +33,64 @@ export function Header() {
             </Link>
             <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
 
-            <Menu
-              width={260}
-              position="bottom-end"
-              transitionProps={{ transition: 'pop-top-right' }}
-              onClose={() => setUserMenuOpened(false)}
-              onOpen={() => setUserMenuOpened(true)}
-              withinPortal
-            >
-              <Menu.Target>
-                <UnstyledButton
-                  className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
-                >
-                  <Group>
-                    <Avatar src={session?.user?.image || ''} alt={session?.user?.name || 'User'} />
-                    <Text>{session?.user?.name || 'User'}</Text>
-                    <IconChevronDown style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-                  </Group>
-                </UnstyledButton>
-              </Menu.Target>
-              <Menu.Dropdown>
+            {status !== 'loading' && (
+              <Menu
+                width={260}
+                position="bottom-end"
+                transitionProps={{ transition: 'pop-top-right' }}
+                onClose={() => setUserMenuOpened(false)}
+                onOpen={() => setUserMenuOpened(true)}
+                withinPortal
+              >
+                <Menu.Target>
+                  <UnstyledButton
+                    className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
+                  >
+                    <Group>
+                      {session ? (
+                        <Avatar src={session.user?.image} alt={session.user?.name || 'User'} />
+                      ) : (
+                        <Avatar>
+                          <IconUser style={{ width: rem(24), height: rem(24) }} stroke={1.5} />
+                        </Avatar>
+                      )}
+                      <Text>{session?.user?.name || 'Guest'}</Text>
+                      <IconChevronDown style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
+                    </Group>
+                  </UnstyledButton>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {session ? (
+                    <Menu.Item
+                      leftSection={
+                        <IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                      }
+                      onClick={() => signOut()}
+                    >
+                      Logout
+                    </Menu.Item>
+                  ) : (
+                    <Menu.Item
+                      component={Link}
+                      href="/login"
+                      leftSection={
+                        <IconLogin style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                      }
+                    >
+                      Login
+                    </Menu.Item>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+            )}
+          </Group>
+        </Container>
+      </div>
+      <Drawer opened={opened} onClose={() => close()} title="Menu" padding="md" size="sm">
+        <div className={classes.drawerContent}>
+          {status !== 'loading' && (
+            <Menu>
+              {session ? (
                 <Menu.Item
                   leftSection={
                     <IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
@@ -61,23 +99,19 @@ export function Header() {
                 >
                   Logout
                 </Menu.Item>
-
-                <Menu.Divider />
-              </Menu.Dropdown>
+              ) : (
+                <Menu.Item
+                  component={Link}
+                  href="/login"
+                  leftSection={
+                    <IconLogin style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                  }
+                >
+                  Login
+                </Menu.Item>
+              )}
             </Menu>
-          </Group>
-        </Container>
-      </div>
-      <Drawer opened={opened} onClose={() => close()} title="Menu" padding="md" size="sm">
-        <div className={classes.drawerContent}>
-          <Menu>
-            <Menu.Item
-              leftSection={<IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
-              onClick={() => signOut()}
-            >
-              Logout
-            </Menu.Item>
-          </Menu>
+          )}
         </div>
       </Drawer>
     </>

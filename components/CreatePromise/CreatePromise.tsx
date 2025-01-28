@@ -11,11 +11,14 @@ import {
   Textarea,
   ColorInput,
   FileInput,
+  Paper,
+  Text,
+  CopyButton,
 } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import React, { useState } from 'react';
-
+import { QRCodeSVG } from 'qrcode.react';
 import { notifications } from '@mantine/notifications';
 
 interface CreatePromiseProps {
@@ -24,6 +27,7 @@ interface CreatePromiseProps {
 
 const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
   const [loading, setLoading] = useState(false);
+  const [createdPromiseId, setCreatedPromiseId] = useState<string | null>(null);
 
   const vowTemplates = [
     { label: 'I solemnly swear to...', value: 'solemn' },
@@ -91,7 +95,8 @@ const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
         throw new Error(error.message || 'Failed to create promise');
       }
 
-      await response.json();
+      const promise = await response.json();
+      setCreatedPromiseId(promise.id);
       notifications.show({
         title: 'Success',
         message: 'Promise created successfully',
@@ -108,6 +113,57 @@ const CreatePromise = ({ onViewChange }: CreatePromiseProps) => {
       setLoading(false);
     }
   });
+
+  if (createdPromiseId) {
+    const promiseUrl = `${window.location.origin}/promise/${createdPromiseId}`;
+
+    return (
+      <Container size="xs" mt="xl">
+        <Paper p="xl" withBorder>
+          <Flex direction="column" gap="lg" align="center">
+            <Title order={2} ta="center">
+              Promise Created!
+            </Title>
+            <Text size="lg" ta="center">
+              Share this QR code with the promise receiver
+            </Text>
+
+            <Paper withBorder p="md">
+              <QRCodeSVG value={promiseUrl} size={200} level="H" includeMargin />
+            </Paper>
+
+            <Flex direction="column" gap="md" style={{ width: '100%' }}>
+              <Text size="sm" fw={500}>
+                Promise Link:
+              </Text>
+              <Flex gap="md">
+                <Text size="sm" style={{ flex: 1 }} truncate>
+                  {promiseUrl}
+                </Text>
+                <CopyButton value={promiseUrl}>
+                  {({ copied, copy }) => (
+                    <Button variant="light" size="xs" onClick={copy}>
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  )}
+                </CopyButton>
+              </Flex>
+            </Flex>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCreatedPromiseId(null);
+                form.reset();
+              }}
+            >
+              Create Another Promise
+            </Button>
+          </Flex>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container size="xs" mt="xl">
