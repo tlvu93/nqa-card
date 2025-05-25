@@ -19,8 +19,15 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { IconDotsVertical, IconQrcode, IconTrash, IconFilter } from '@tabler/icons-react';
+import {
+  IconDotsVertical,
+  IconQrcode,
+  IconTrash,
+  IconFilter,
+  IconExternalLink,
+} from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 
 interface PromiseData {
@@ -47,6 +54,7 @@ export function UserPromises() {
     useDisclosure(false);
   const [promiseToForfeit, setPromiseToForfeit] = useState<string | null>(null);
   const { data: session } = useSession();
+  const router = useRouter();
 
   const fetchQRCode = async (promiseId: string) => {
     try {
@@ -208,6 +216,12 @@ export function UserPromises() {
                     </ActionIcon>
                   </Menu.Target>
                   <Menu.Dropdown>
+                    <Menu.Item
+                      leftSection={<IconExternalLink size={16} />}
+                      onClick={() => router.push(`/promise/${promise.id}`)}
+                    >
+                      Open Promise
+                    </Menu.Item>
                     <Menu.Item
                       leftSection={<IconQrcode size={16} />}
                       onClick={() => fetchQRCode(promise.id)}
